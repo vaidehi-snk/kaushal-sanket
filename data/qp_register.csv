@@ -1,0 +1,7 @@
+trade,qp_code,qp_title,nco2015,nsqf,status,deactivated_on,successor_hint,source
+Automotive Body Repair Technician,ASC/Q1405,Automotive Body Repair Technician,7213.0301,3,active,,,https://s3.ap-south-1.amazonaws.com/nsdcproddocuments/qpPdf/ASC_Q1405_v3.0.pdf
+Two-wheeler Service Technician,ASC/Q1411,Two Wheeler Service Technician,7231.0501,4,deactivated,2025-09-22,ask ASDC for the replacement QP,https://s3.ap-south-1.amazonaws.com/nsdcproddocuments/qpPdf/ASC_Q1411_v5.0.pdf
+Solar PV Installer,SGJ/Q0101,Solar PV Installer (Suryamitra),7421.1401,4,active,,,https://s3.ap-south-1.amazonaws.com/nsdcproddocuments/qpPdf/SGJ_Q0101_v4.0.pdf
+AC Field Technician,ELE/Q3102,Field Technician - Air Conditioner,7421.0401,4,active,,,https://s3.ap-south-1.amazonaws.com/nsdcproddocuments/qpPdf/ELE_Q3102_v4.0.pdf
+Retail Sales Assistant,RAS/Q0103,Retail Sales Assistant,5223.0105,3,active,,,https://s3.ap-south-1.amazonaws.com/nsdcproddocuments/qpPdf/RAS_Q0103_v4.0.pdf
+Retail Cashier,RAS/Q0102,Retail Cashier,4211.0301,3,active,,,https://s3.ap-south-1.amazonaws.com/nsdcproddocuments/qpPdf/RAS_Q0102_v4.0.pdf

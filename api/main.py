@@ -98,7 +98,8 @@ def v2_rebalance():
 
 @app.get("/v2/export/targets.csv")
 def v2_targets_csv():
-    cols = ["state", "district", "sector", "trade", "course", "status", "warn", "months_to", "seats_now", "target", "change", "action"]
+    cols = ["state", "district", "sector", "trade", "qp_code", "qp_status", "course", "status", "likelihood_word", "lever", "seat_fill",
+            "placement_rate", "warn", "months_to", "seats_now", "target", "change", "action"]
     buf = io.StringIO(); w = csv.writer(buf); w.writerow(cols)
     for r in _v2()["rows"]:
         if r["level"] == "district_trade" and r.get("target") is not None:

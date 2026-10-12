@@ -5,6 +5,7 @@ Open `index.html` in a browser. No server, no install: data is embedded. (Hostin
 ```
 pip install -r requirements.txt
 python -m engine.v2                  # writes data/processed/results.json + docs/METHODOLOGY.md
+python embed_results.py              # copies results.json into index.html (portal stays one offline file)
 python build_plfs_supply.py "path\2025.csv"   # real PLFS supply aggregates (Maharashtra)
 python -m uvicorn api.main:app --reload        # API docs at /docs  (/v2/rows, /v2/index, /v2/rebalance, /v2/export/targets.csv, /v2/export/targets.parquet; engine also writes data/processed/seat_targets.parquet)
 python -m pytest -q
@@ -13,7 +14,11 @@ In the portal use "Load results JSON" to load a new results.json. Schedule `pyth
 
 ## Honest status
 All demand/supply/forecast data is SYNTHETIC until NCS and scheme data are connected (swap `build_data()` in engine/v2.py for adapters).
-PLFS 2025 aggregates are real. Hindi/Marathi labels are drafts. NCO codes and course names are illustrative. Centres are illustrative.
+PLFS 2025 aggregates are real. Hindi/Marathi labels are drafts. Centres are illustrative.
+Courses and NCO-2015 codes are real: each pilot trade maps to an NSQF Qualification Pack read from the NSDC QP file (data/qp_register.csv, checked 2026-10-12). One pilot QP (ASC/Q1411) is deactivated and is flagged on purpose.
+
+## Decision layer (added 2026-10-12)
+Every call now carries a likelihood in IPCC words, a lever (add capacity / fill empty seats first / review the course / redirect / shrink) read from the supply funnel, and the QP status. The portal opens on an "Act now" list. See METHODOLOGY items 11-13 and tests/test_v2_levers.py.
 
 ## Occupation coder
 `python -m engine.coding.nco_coder` prints leave-one-language-out accuracy on data/nco_labelled.csv (EN/HI/MR).

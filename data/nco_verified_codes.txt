@@ -1,2 +1,8 @@
 # Codes independently confirmed against official documents (not just reported by a chatbot)
 7421.1401
+# Read from NSDC Qualification Pack files (data/qp_register.csv), 2026-10-12
+7213.0301
+7231.0501
+7421.0401
+5223.0105
+4211.0301

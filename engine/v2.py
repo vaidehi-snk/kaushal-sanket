@@ -1,6 +1,6 @@
 """Engine v2. Multi-source demand index (learned weights), national->district roll-ups, early warning,
 seat targets, seat-neutral rebalancing, lead-time validation. ALL DATA HERE IS SYNTHETIC; swap build_data() for real adapters."""
-import json, warnings, datetime as dt
+import json, math, warnings, datetime as dt
 from pathlib import Path
 import numpy as np, pandas as pd
 from sklearn.linear_model import Ridge
@@ -17,21 +17,25 @@ FACT = {"white": [1.6, 1.0, 0.7, 0.4], "blue": [0.5, 0.8, 1.0, 1.3]}  # how much
 SD = [0.10, 0.07, 0.09, 0.15]
 STATES = {"Maharashtra": ["Pune", "Nashik", "Nagpur", "Thane", "Kolhapur", "Chhatrapati Sambhajinagar"],
           "Karnataka": ["Bengaluru Urban", "Mysuru", "Belagavi", "Dharwad"]}
-TRADES = {  # trade: (sector, NCO (illustrative), course (illustrative), kind, base, growth, supply/current demand)
-    "Motor Vehicle Mechanic": ("Automotive", "7231.0100", "Automotive Service Technician, NSQF L4", "blue", 120, .002, .95),
-    "Two-wheeler Technician": ("Automotive", "7231.0501", "Two-wheeler Service Technician, NSQF L3", "blue", 90, .030, .78),
-    "Solar PV Technician": ("Renewable & Electrical", "7421.1401", "Solar PV Installer, NSQF L4", "blue", 40, .025, .40),
-    "Electrician": ("Renewable & Electrical", "7411.0100", "Electrician (Domestic), NSQF L4", "blue", 110, .002, 1.45),
-    "Retail Sales Associate": ("Retail", "5223.0100", "Retail Sales Associate, NSQF L4", "white", 300, 0, 1.6),
-    "Cashier": ("Retail", "4211.0100", "Retail Cashier, NSQF L3", "white", 150, .001, 1.3)}
-SHORT = {("Kolhapur", "Solar PV Technician"): 14, ("Dharwad", "Solar PV Technician"): 18}
+TRADES = {  # trade: (sector, NCO-2015, course, kind, base, growth, supply/current demand). Codes from data/qp_register.csv (NSDC QP files)
+    "Automotive Body Repair Technician": ("Automotive", "7213.0301", "ASC/Q1405 Automotive Body Repair Technician, NSQF L3", "blue", 120, .002, .95),
+    "Two-wheeler Service Technician": ("Automotive", "7231.0501", "ASC/Q1411 Two Wheeler Service Technician, NSQF L4", "blue", 90, .030, .78),
+    "Solar PV Installer": ("Renewable & Electrical", "7421.1401", "SGJ/Q0101 Solar PV Installer (Suryamitra), NSQF L4", "blue", 40, .025, .40),
+    "AC Field Technician": ("Renewable & Electrical", "7421.0401", "ELE/Q3102 Field Technician - Air Conditioner, NSQF L4", "blue", 110, .002, 1.45),
+    "Retail Sales Assistant": ("Retail", "5223.0105", "RAS/Q0103 Retail Sales Assistant, NSQF L3", "white", 300, 0, 1.6),
+    "Retail Cashier": ("Retail", "4211.0301", "RAS/Q0102 Retail Cashier, NSQF L3", "white", 150, .001, 1.3)}
+QP = pd.read_csv(Path(__file__).resolve().parent.parent / "data" / "qp_register.csv", dtype=str).fillna("").set_index("trade").to_dict("index")
+# Funnel realism (separate random stream so demand, forecasts and validation are unchanged). Planted cases for the levers:
+LOW_FILL = {("Thane", "Solar PV Installer"): .52, ("Bengaluru Urban", "Solar PV Installer"): .58, ("Mysuru", "Retail Cashier"): .50}
+LOW_PLACE = {("Pune", "Automotive Body Repair Technician"): .42, ("Belagavi", "Automotive Body Repair Technician"): .45}
+SHORT = {("Kolhapur", "Solar PV Installer"): 14, ("Dharwad", "Solar PV Installer"): 18}
 NO_NCS = {"Belagavi", "Mysuru", "Nagpur"}   # districts with no NCS feed (coverage gap)
 LEVELS = GROUPS   # includes nat_all (all pilot states) for reconciliation
 TYPES = ["ITI", "PMKVY training centre", "Sector skill partner centre"]
 
 
 def build_data(seed=11, months=36):
-    rng = np.random.default_rng(seed); t = np.arange(months)
+    rng = np.random.default_rng(seed); rf = np.random.default_rng(seed + 1000); t = np.arange(months)
     per = pd.date_range("2023-01-01", periods=months, freq="MS"); parts = []
     for st, ds in STATES.items():
         for d in ds:
@@ -42,9 +46,10 @@ def build_data(seed=11, months=36):
                 cert = base * sc * (1 + g * (months - 1)) * ratio * rng.normal(1, .05, months)
                 sig = {s: hires * FACT[kind][i] * rng.normal(1, SD[i], months) for i, s in enumerate(SRC)}
                 if d in NO_NCS: sig["ncs_vacancies"] = np.full(months, np.nan)
+                fill = LOW_FILL.get((d, tr), rf.uniform(.82, .97)); qual = LOW_PLACE.get((d, tr), rf.uniform(.86, 1.0))
                 df = pd.DataFrame({"period": per, "state": st, "district": d, "sector": sec, "trade": tr, "nco_code": nco,
                                    "course": course, "kind": kind, "placements": hires * rng.normal(1, .04, months),
-                                   "seats": cert / .87 / .92, "enrolled": cert / .87, "certified": cert, **sig})
+                                   "seats": cert / .87 / fill, "enrolled": cert / .87, "certified": cert, "quality": qual, **sig})
                 parts.append(df.tail(SHORT.get((d, tr), months)))
     return pd.concat(parts, ignore_index=True)
 
@@ -101,9 +106,40 @@ def assess(f, s, sig, recent3):
     if st in ("balanced", "uncertain"):
         if ms: warn, mo = "approaching_shortage", ms
         elif mt: warn, mo = "approaching_saturation", mt
+    # Probability that the gap clears the threshold (normal demand error, supply as measured). The call rule (whole 80%
+    # range beyond the threshold) is the same as "at least 90% likely", so likelihood words stay consistent with calls.
+    ph = lambda x: 0.5 * (1 + math.erf(x / math.sqrt(2)))
+    p_sh = 1 - ph((S * (1 + THR) / (1 - THR) - d) / max(sg, 1e-9)); p_sa = ph((S * (1 - THR) / (1 + THR) - d) / max(sg, 1e-9))
+    side, p = ("shortage", p_sh) if p_sh >= p_sa else ("saturation", p_sa)
     return dict(status=st, warn=warn, months_to=mo, emerging=bool(st == "shortage" and recent3 > 0 and d / recent3 > 1.25),
+                p_shortage=p_sh, p_saturation=p_sa, likely_side=side, likelihood=p, likelihood_word=ipcc(p),
                 gap_index=mid, gap_lo80=lo, gap_hi80=hi, forecast_demand=d, demand_lo80=max(d - Z80 * sg, 0),
                 demand_hi80=d + Z80 * sg, supply_3m=S, severity=mid * np.sqrt(max(d, 0)))
+
+
+def ipcc(p):
+    """IPCC AR5 calibrated likelihood language."""
+    return ("virtually certain" if p >= .99 else "very likely" if p >= .9 else "likely" if p >= .66
+            else "about as likely as not" if p >= .33 else "unlikely")
+
+
+def lever(r):
+    """What to do, not just where: reads the supply funnel (seat fill, placement of certified trainees)."""
+    F = r["funnel"]; fill = F["enrolled"] / max(F["seats"], 1); place = F["placed"] / max(F["certified"], 1)
+    st, chg = r["status"], r.get("change", 0)
+    if place < .5 and st != "saturation":
+        return "review_course", fill, place, (f"Only {place:.0%} of certified trainees are placed. Review the course (QP/NSQF content, employer tie-ups) "
+                                              f"with the Sector Skill Council before adding seats")
+    if st == "shortage" and fill < .7:
+        return "fix_uptake", fill, place, (f"Do not add seats yet: only {fill:.0%} of seats are filled. Fill them first "
+                                           f"(mobilisation, stipend, counselling)")
+    if st == "shortage":
+        return "add_capacity", fill, place, f"Add capacity: seats are {fill:.0%} filled and {place:.0%} of certified trainees are placed"
+    if st == "saturation" and fill < .7:
+        return "shrink", fill, place, f"Shrink or merge batches: only {fill:.0%} of seats are filled"
+    if st == "saturation":
+        return "redirect", fill, place, f"Redirect seats to a trade in shortage in this district (seats are {fill:.0%} filled)"
+    return None, fill, place, ""
 
 
 def seat_plan(a, now):
@@ -130,8 +166,17 @@ def sig_from_sd3(sd3):
 
 def finalize(r):
     a = assess(r["f"], r["s"], r["sig"], r["recent3"]); p = seat_plan(a, r["now"]); r.update(a); r.update(p)
+    lv, fill, place, why = lever(r); r.update(lever=lv, lever_text=why, seat_fill=fill, placement_rate=place)
+    if lv == "fix_uptake": r["change"] = 0.0
+    if lv in ("fix_uptake", "review_course", "shrink"): r["action"] = why + (". " + r["action"] if lv == "shrink" else "")
+    q = QP.get(r["trade"], {}); r.update(qp_code=q.get("qp_code"), qp_status=q.get("status"), qp_deactivated_on=q.get("deactivated_on") or None,
+                                        qp_source=q.get("source"))
+    if q.get("status") == "deactivated":
+        r["action"] = (f"QP {q['qp_code']} was deactivated on {q['deactivated_on']}: run no new batches on it and move these seats to an "
+                       f"active QP ({q['successor_hint']}). " + r["action"])
     r["centres"] = [{"name": f"{r['district']} {chr(65 + i)}", "type": TYPES[i], "seats": round(r["now"] * r["sh"][i]),
-                     "change": round(p["change"] * r["sh"][i])} for i in range(3)]
+                     "change": round(r["change"] * r["sh"][i])} for i in range(3)]   # after the lever, so "fill seats first" means no change
+
     r["nsqf"] = ("Review the NSQF curriculum: demand is rising fast" if a["emerging"]
                  else "Review intake or retarget the course" if a["status"] == "saturation" else "")
 
@@ -173,7 +218,7 @@ def base_rows(df, coef):
         if bt[best]["mase"] > MASE_CUT: out.append({**m, "status": "insufficient_evidence", "reason": f"backtest MASE {bt[best]['mase']:.2f} above {MASE_CUT}"}); continue
         f = MODELS[best](y, H); rm = bt[best]["rmse"]; sig = np.array([rm * np.sqrt(max(i + 1, 3) / 3) for i in range(H)])
         s = g.certified.tail(6).mean(); now = g.seats.tail(12).sum(); r3 = y[-3:].sum()
-        fun = dict(seats=now, enrolled=g.enrolled.tail(12).sum(), certified=g.certified.tail(12).sum(), placed=np.minimum(g.certified.tail(12), g.placements.tail(12)).sum())
+        fun = dict(seats=now, enrolled=g.enrolled.tail(12).sum(), certified=g.certified.tail(12).sum(), placed=(np.minimum(g.certified.tail(12), g.placements.tail(12)) * g.quality.iat[0]).sum())
         row = {**m, "model": best, "mase": bt[best]["mase"], "mase_snaive": bt["snaive"]["mase"], "f": f, "sig": sig, "s": s, "recent3": r3,
                "now": now, "hist": y[-18:], "funnel": fun, "y": y, "sh": rng.dirichlet([4, 3, 2])}
         finalize(row); out.append(row)
@@ -264,6 +309,9 @@ def build(seed=11, write=True):
 8. **Seat target**: 12 x forecast monthly demand / completion rate ({COMP}). Change = target - seats now, only when a call is made.
 9. **Reconciliation**: every level (national, state, district, sector, trade and their combinations) is forecast on its own, then reconciled (structural weighted least squares; MinT with shrinkage and OLS are compared on a held-out test) so all levels add up exactly. Intervals use the reconciled error covariance with shrunk residual correlations. Series that abstained are left out of roll-ups, never imputed.
 10. **Validation**: lead-time test, {lt['lag_months']} months ahead, recall {lt['recall']:.2f}, false-alarm rate {lt['false_alarm_rate']:.2f} on {lt['series']} series (synthetic, so a plumbing check, not an accuracy claim).
+11. **Likelihood words**: P(gap beyond +/-{THR}) from the forecast error, reported with IPCC AR5 wording (likely >= 66%, very likely >= 90%, virtually certain >= 99%). The call rule (whole 80% range beyond the threshold) equals "at least 90% likely", so words and calls agree.
+12. **Levers (what to do, not only where)**: from the supply funnel. Placement of certified trainees under 50% -> review the course with the SSC before adding seats. Shortage with seats under 70% filled -> fill empty seats first (no seat increase). Shortage otherwise -> add capacity. Oversupply with seats under 70% filled -> shrink or merge; otherwise -> redirect seats to a trade in shortage.
+13. **QP register**: every trade maps to an NSQF Qualification Pack read from the NSDC QP file (data/qp_register.csv: code, NCO-2015, level, status). A deactivated QP is flagged in every recommendation: no new batches on it, move seats to an active QP.
 """, encoding="utf-8")
     return res
 
