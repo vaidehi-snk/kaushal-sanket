@@ -1,0 +1,196 @@
+0	Person ID
+1	Survey Year
+2	Sampling Methodology
+3	State/UT
+4	District
+5	Household Size
+6	Household Type
+7	Household Religion
+8	Household Social Group
+9	Household Usual Monthly Expenditure
+10	Household Imputed Home-Grown Consumption
+11	Household Imputed Wages & Salaries (In-Kind)
+12	Household Annual Clothing Expenditure
+13	Household Annual Durables Expenditure
+14	Household Monthly Consumer Expenditure (MPCE)
+15	Household Land Possessed
+16	Household Land Leased Out
+17	Household Monthly Rental Income
+18	Household Monthly Interest Income
+19	Household Monthly Pension Income
+20	Household Monthly Remittance Income
+21	Household Monthly Income
+22	Relationship to Head
+23	Sex
+24	Age
+25	Marital Status
+26	General Education Level
+27	Technical Education Level
+28	Years of Formal Education
+29	Class/Grade Successfully Completed
+30	Education Before Class I
+31	Education After Class/Grade
+32	Last Completed Year Was Last Attended
+33	Attendance in Last Education Year
+34	Current Attendance Status
+35	Secondary Education Attendance
+36	Vocational Training
+37	Entrance/Employment Exam Training
+38	Training/Course Completion
+39	Training Completed (Last 365 Days)
+40	Field of Training
+41	Training Duration
+42	Training Type
+43	Training Funding Source
+44	Training Certifying Body
+45	Principal Activity Status
+46	Principal Industry
+47	Principal Occupation
+48	Principal Workplace Location
+49	Principal Enterprise Type
+50	Principal Workers Count
+51	Principal Job Contract Type
+52	Principal Job - Paid Leave
+53	Principal Job - Social Security
+54	Principal Product Usage
+55	Principal Activity Duration
+56	Subsidiary Work Engagement
+57	Subsidiary Activity Status
+58	Subsidiary Industry
+59	Subsidiary Occupation
+60	Subsidiary Workplace Location
+61	Subsidiary Enterprise Type
+62	Subsidiary Workers Count
+63	Subsidiary Job Contract Type
+64	Subsidiary Job - Paid Leave
+65	Subsidiary Job - Social Security
+66	Subsidiary Product Usage
+67	Subsidiary Activity Duration
+68	CWS Status
+69	CWS Industry
+70	CWS Occupation
+71	CWS Earnings (Salaried)
+72	CWS Earnings (Self-Employed)
+73	CWS Total Weekly Hours
+74	CWS Total Additional Work Hours
+75	Ever Worked (Last 365 Days)
+76	Ever Worked
+77	Work Search Efforts
+78	Unemployment Duration
+79	Reason Not Working
+80	Main Reason for Principal Status
+81	Day 1 - Activity 1 - Status
+82	Day 1 - Activity 1 - Industry
+83	Day 1 - Activity 1 - Hours
+84	Day 1 - Activity 1 - Wage
+85	Day 1 - Activity 2 - Status
+86	Day 1 - Activity 2 - Industry
+87	Day 1 - Activity 2 - Hours
+88	Day 1 - Activity 2 - Wage
+89	Day 1 - Total Hours
+90	Day 1 - Additional Work Hours
+91	Day 2 - Activity 1 - Status
+92	Day 2 - Activity 1 - Industry
+93	Day 2 - Activity 1 - Hours
+94	Day 2 - Activity 1 - Wage
+95	Day 2 - Activity 2 - Status
+96	Day 2 - Activity 2 - Industry
+97	Day 2 - Activity 2 - Hours
+98	Day 2 - Activity 2 - Wage
+99	Day 2 - Total Hours
+100	Day 2 - Additional Work Hours
+101	Day 3 - Activity 1 - Status
+102	Day 3 - Activity 1 - Industry
+103	Day 3 - Activity 1 - Hours
+104	Day 3 - Activity 1 - Wage
+105	Day 3 - Activity 2 - Status
+106	Day 3 - Activity 2 - Industry
+107	Day 3 - Activity 2 - Hours
+108	Day 3 - Activity 2 - Wage
+109	Day 3 - Total Hours
+110	Day 3 - Additional Work Hours
+111	Day 4 - Activity 1 - Status
+112	Day 4 - Activity 1 - Industry
+113	Day 4 - Activity 1 - Hours
+114	Day 4 - Activity 1 - Wage
+115	Day 4 - Activity 2 - Status
+116	Day 4 - Activity 2 - Industry
+117	Day 4 - Activity 2 - Hours
+118	Day 4 - Activity 2 - Wage
+119	Day 4 - Total Hours
+120	Day 4 - Additional Work Hours
+121	Day 5 - Activity 1 - Status
+122	Day 5 - Activity 1 - Industry
+123	Day 5 - Activity 1 - Hours
+124	Day 5 - Activity 1 - Wage
+125	Day 5 - Activity 2 - Status
+126	Day 5 - Activity 2 - Industry
+127	Day 5 - Activity 2 - Hours
+128	Day 5 - Activity 2 - Wage
+129	Day 5 - Total Hours
+130	Day 5 - Additional Work Hours
+131	Day 6 - Activity 1 - Status
+132	Day 6 - Activity 1 - Industry
+133	Day 6 - Activity 1 - Hours
+134	Day 6 - Activity 1 - Wage
+135	Day 6 - Activity 2 - Status
+136	Day 6 - Activity 2 - Industry
+137	Day 6 - Activity 2 - Hours
+138	Day 6 - Activity 2 - Wage
+139	Day 6 - Total Hours
+140	Day 6 - Additional Work Hours
+141	Day 7 - Activity 1 - Status
+142	Day 7 - Activity 1 - Industry
+143	Day 7 - Activity 1 - Hours
+144	Day 7 - Activity 1 - Wage
+145	Day 7 - Activity 2 - Status
+146	Day 7 - Activity 2 - Industry
+147	Day 7 - Activity 2 - Hours
+148	Day 7 - Activity 2 - Wage
+149	Day 7 - Total Hours
+150	Day 7 - Additional Work Hours
+151	Household Subsample Multiplier
+152	Person Subsample Multiplier
+153	Household Substratum Subsample
+154	Household Substratum
+155	Household Sample Count
+156	Person Substratum Subsample
+157	Person Count Substratum
+158	State Substratum
+159	Household Final Weight
+160	Person Final Weight
+161	Household Sample FSU Count
+162	Person Sample FSU Count
+163	Household Total Sub-Division
+164	Person Total Sub-Division
+165	Household Basic Stratum Size
+166	Person Basic Stratum Size
+167	Household Listed Household Count
+168	Person Listed Household Count
+169	Household Selected Household Count
+170	Person Selected Household Count
+171	Household Substitution Reason
+172	Household Informant Serial Number
+173	Response Status
+174	Survey Status
+175	Survey Month
+176	Survey Date
+177	Total Survey Time
+178	Panel
+179	Schedule
+180	Quarter
+181	Reference Month
+182	Visit
+183	Sector
+184	Stratum
+185	Sub-Stratum
+186	Basic Stratum
+187	Group
+188	Sub-Sample
+189	NSS Region
+190	FOD Sub-Region
+191	First Stage Unit (FSU)
+192	Sample Segment/Sub-Block Number
+193	Second Stage Stratum Number
+194	Household Number
+195	Person Number

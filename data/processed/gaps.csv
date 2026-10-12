@@ -1,0 +1,19 @@
+state,district,nco_code,sector,status,months,model,forecast_demand,demand_lo80,demand_hi80,supply_3m,gap_index,gap_lo80,gap_hi80,emerging,severity,backtest_mase,reason,rank
+Maharashtra,Chh. Sambhajinagar,5223,Retail,saturation,36,snaive,1534.0,1472.6,1595.4,2222.0,-0.183,-0.203,-0.164,False,-7.17,0.686,,7.0
+Maharashtra,Chh. Sambhajinagar,7231,Automotive Repair,balanced,36,snaive,595.0,567.7,622.3,539.5,0.049,0.025,0.071,False,1.19,0.932,,11.0
+Maharashtra,Chh. Sambhajinagar,7411,Solar,shortage,36,snaive,337.0,306.1,367.9,76.5,0.63,0.6,0.656,False,11.57,0.627,,1.0
+Maharashtra,Kolhapur,5223,Retail,saturation,36,ets,1386.1,1320.1,1452.2,1967.0,-0.173,-0.197,-0.151,False,-6.45,1.121,,9.0
+Maharashtra,Kolhapur,7231,Automotive Repair,balanced,36,ets,469.9,437.8,502.1,462.5,0.008,-0.027,0.041,False,0.17,1.038,,15.0
+Maharashtra,Kolhapur,7411,Solar,insufficient_evidence,14,,,,,,,,,,,,"only 14 months, need 33",
+Maharashtra,Nagpur,5223,Retail,saturation,36,ets,1156.9,1088.2,1225.5,1784.0,-0.213,-0.242,-0.186,False,-7.25,0.976,,6.0
+Maharashtra,Nagpur,7231,Automotive Repair,balanced,36,ets,418.3,391.1,445.5,421.0,-0.003,-0.037,0.028,False,-0.07,1.281,,16.0
+Maharashtra,Nagpur,7411,Solar,insufficient_evidence,18,,,,,,,,,,,,"only 18 months, need 33",
+Maharashtra,Nashik,5223,Retail,saturation,36,snaive,1137.0,1087.0,1187.0,1638.0,-0.181,-0.202,-0.16,False,-6.09,0.843,,10.0
+Maharashtra,Nashik,7231,Automotive Repair,balanced,36,ets,382.4,352.9,411.9,400.5,-0.023,-0.063,0.014,False,-0.45,1.053,,13.0
+Maharashtra,Nashik,7411,Solar,shortage,36,ets,244.3,231.6,257.1,55.5,0.63,0.613,0.645,False,9.84,0.35,,3.0
+Maharashtra,Pune,5223,Retail,saturation,36,ets,953.6,919.1,988.2,1624.0,-0.26,-0.277,-0.243,False,-8.03,0.425,,4.0
+Maharashtra,Pune,7231,Automotive Repair,balanced,36,ets,400.4,380.2,420.7,379.5,0.027,0.001,0.051,False,0.54,0.689,,12.0
+Maharashtra,Pune,7411,Solar,shortage,36,ets,244.8,229.0,260.7,54.5,0.636,0.616,0.654,False,9.95,0.406,,2.0
+Maharashtra,Thane,5223,Retail,saturation,36,ets,419.3,384.7,453.8,820.0,-0.323,-0.361,-0.288,False,-6.62,1.211,,8.0
+Maharashtra,Thane,7231,Automotive Repair,balanced,36,snaive,195.0,181.4,208.6,184.5,0.028,-0.009,0.061,False,0.39,1.19,,14.0
+Maharashtra,Thane,7411,Solar,shortage,36,ets,135.9,130.3,141.5,26.5,0.674,0.662,0.685,False,7.85,0.296,,5.0
