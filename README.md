@@ -1,10 +1,12 @@
-# SIH26246 - Labour Market Intelligence System (prototype), Team Verisonic
+# SIH26246 - Labour Market Intelligence System (prototype), Team CodeVeda
 Open `index.html` in a browser. No server, no install: data is embedded. (Hosting: drag the file onto Vercel/Netlify.)
 
 ## Regenerate results (engine)
 ```
 pip install -r requirements.txt
-python -m engine.v2                  # writes data/processed/results.json + docs/METHODOLOGY.md
+python -m engine.v2                  # writes data/processed/results.json + docs/METHODOLOGY.md (built-in synthetic data)
+python -m engine.v2 --template       # writes data/TEMPLATE.csv (the exact columns an evaluation file needs)
+python -m engine.v2 --csv data/TEMPLATE.csv   # run the engine on a real / evaluation data file
 python embed_results.py              # copies results.json into index.html (portal stays one offline file)
 python build_plfs_supply.py "path\2025.csv"   # real PLFS supply aggregates (Maharashtra)
 python -m uvicorn api.main:app --reload        # API docs at /docs  (/v2/rows, /v2/index, /v2/rebalance, /v2/export/targets.csv, /v2/export/targets.parquet; engine also writes data/processed/seat_targets.parquet)

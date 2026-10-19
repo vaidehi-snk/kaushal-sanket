@@ -193,12 +193,12 @@ input[type=range]{accent-color:var(--ink)}
 <div class="card" id="ancard"><div class="chd"><div><h2 data-k="an">Act now</h2><p data-k="an2">Actions ranked by size and likelihood. Open one to see the evidence.</p></div><span class="mu" id="ann" style="font-size:.84rem"></span></div><ol class="q" id="an"></ol></div>
 </div>
 <div class="kph"><h2 data-k="kh">Every forecast at a glance</h2><p data-k="khn">Click a number to list those forecasts.</p></div><div class="kp" id="kp"></div>
-<div class="card" id="excard"><div class="chd"><div><h2 data-k="ex">Explore every forecast</h2><p data-k="exn">Drill down from all pilot states to district and trade. Rows are ranked by severity.</p></div></div>
+<div class="card" id="excard"><div class="chd"><div><h2 data-k="ex">Explore every forecast</h2><p data-k="exn">Drill down from national (pilot scope) to district and trade. Rows are ranked by severity.</p></div></div>
 <div class="bar"><div class="seg" role="group" aria-label="View"><button data-v="geo" aria-pressed="true" data-k="vg">By geography</button><button data-v="trade" aria-pressed="false" data-k="vt">By trade</button><button data-v="sector" aria-pressed="false" data-k="vs">By sector</button></div>
 <select id="ft" aria-label="Filter by call"></select><span class="sp"></span><button class="btn" id="eg"></button><button class="btn" id="et"></button></div>
 <nav id="bc" aria-label="Breadcrumb"></nav>
 <div class="tw"><table><thead><tr><th data-k="n">Name</th><th data-k="s">Call</th><th data-k="gr">Gap range (80%)</th><th data-k="sc" style="text-align:right">Seat change / yr</th><th data-k="lvr">What to do</th><th data-k="e">Evidence</th></tr></thead><tbody id="tb"></tbody></table></div>
-<p class="note" style="padding:0 16px 14px">Gap = (forecast 3-month demand − certified supply) / (demand + supply). A call needs the whole 80% range beyond ±0.15. "All pilot states" means Maharashtra and Karnataka only.</p></div>
+<p class="note" style="padding:0 16px 14px">Gap = (forecast 3-month demand − certified supply) / (demand + supply). A call needs the whole 80% range beyond ±0.15. "National (pilot scope)" means Maharashtra and Karnataka only.</p></div>
 </section>
 
 <section class="pane" id="d" hidden><div class="intro"><div class="bn">1</div><h2 data-k="s1">Demand signals</h2><p data-k="i1">Four sources of hiring signals are cleaned, put on one scale and combined into one demand index. The weights are learned from data and tested, not chosen by hand.</p></div><div id="dbody"></div></section>
@@ -232,7 +232,7 @@ input[type=range]{accent-color:var(--ink)}
 <tr><td>NSQF course revisions and centre-level capacity</td><td>Real NSDC QP register with deactivated-QP flags; course review lever; centre-level seat split</td><td>Built; centres are illustrative</td></tr></tbody></table></div></div>
 <h3>Limits we state openly</h3><p>All demand, supply and forecasts here are synthetic until NCS and scheme data are connected. PLFS 2025 is real but covers 12 months, and only 30 district × training-field cells (4 fields) reach 30 persons in Maharashtra, so district training capacity must come from scheme data. Weights are learned on synthetic data, so they show the method, not a finding. Ranges use correlations between series estimated from about two years of monthly errors, shrunk toward zero, so they are approximate.</p>
 <h3>Extras beyond the brief</h3><p>Likelihood words on every call, a lever that says what to do, real course (QP) status, evidence level on every call, a planner decision log, seat-neutral rebalancing, a lead-time backtest, and refusal to call when evidence is thin.</p></section>
-<p class="ft">Prototype built for Smart India Hackathon 2026 (PS SIH26246) by Team Verisonic, APCOER Pune. Not an official government portal. District boundaries: LGD / Bharatmaps via datameet (CC0).</p>
+<p class="ft">Prototype built for Smart India Hackathon 2026 (PS SIH26246) by Team CodeVeda. Not an official government portal. District boundaries: LGD / Bharatmaps via datameet (CC0).</p>
 </main>
 <dialog class="case" id="dlg" aria-label="Forecast details"><div id="case"></div></dialog>
 <script>
@@ -281,7 +281,7 @@ i3:'For each district and trade: will demand for trained workers outrun supply i
 i4:"Turn the forecasts into next-cycle seat targets, move seats between trades without changing the total, and keep a log of every planner decision next to the engine's call.",
 map:'District map',mapn:'Colour shows the call for the trade you pick. Hatched: a gap is hinted but not proven. Dotted: not enough data, so no call. Click a district.',all:'All trades',
 an:'Act now',an2:'Actions ranked by size and likelihood. Open one to see the evidence.',kh:'Every forecast at a glance',khn:'Click a number to list those forecasts.',
-ex:'Explore every forecast',exn:'Drill down from all pilot states to district and trade. Rows are ranked by severity.',vg:'By geography',vt:'By trade',vs:'By sector',root:'All pilot states',
+ex:'Explore every forecast',exn:'Drill down from national (pilot scope) to district and trade. Rows are ranked by severity.',vg:'By geography',vt:'By trade',vs:'By sector',root:'National (pilot scope)',
 fall:'All calls',fw:'Early warnings only',exc:'Export this view',et:'Export seat targets',n:'Name',s:'Call',gr:'Gap range (80%)',sc:'Seat change / yr',lvr:'What to do',e:'Evidence',
 s_shortage:'Shortage',s_saturation:'Oversupply',s_balanced:'Balanced',s_uncertain:'Uncertain',s_insufficient_evidence:'Not enough data',
 x_shortage:'Demand will outrun trained supply',x_saturation:'More trainees than jobs',x_balanced:'Supply matches demand',x_uncertain:'A gap is hinted, not proven',x_insufficient_evidence:'Too little data to make a call',
@@ -419,7 +419,7 @@ function openDistrict(n){const A=rowFor(n,''),rows=D.filter(r=>r.level=='distric
  showDlg(hdr(ic('pin'),E(n),`${E(A.state)} · ${rows.length} ${E(tr('trades'))}`)+`<div class="cb"><div class="sec verdict st-${A.status}">${chip(A.status)}<div class="hl">${E(tr('x_'+A.status))}</div><p class="note" style="margin:0">${why(A)}</p></div><p class="mu" style="margin:0">${E(tr('pick'))}</p>${listHtml(rows)}</div>`,null,me);
  $$('#case .tl button').forEach(b=>b.onclick=()=>openCase(+b.dataset.i,me))}
 function openCase(i,backFn){const r=D[i],leaf=r.level=='district_trade',c=leaf?ev(r):null,cen=r.centres||[],me=()=>openCase(i,backFn);
- const sub=leaf?`${E(r.district)} · ${E(r.state)} · <span class="mono">${E(r.qp_code||'')}</span> · <span class="mono">NCO ${E(r.nco)}</span>`:E(r.level.replace('_',' · ').replace('nat','all pilot states'));
+ const sub=leaf?`${E(r.district)} · ${E(r.state)} · <span class="mono">${E(r.qp_code||'')}</span> · <span class="mono">NCO ${E(r.nco)}</span>`:E(r.level.replace('_',' · ').replace('nat','national'));
  const what=r.qp_status=='deactivated'?`QP ${r.qp_code} was deactivated on ${r.qp_deactivated_on}. `:'';
  let h=hdr(rIcon(r),E(leaf?r.trade:lbl(r)),sub,backFn)+`<div class="cb">
  <section class="sec verdict st-${r.status}">${chip(r.status)} ${lvChip(r)}<div class="hl">${E(headline(r))}</div>${r.action||r.lever_text?`<div class="act"><b>${E(tr('lvr'))}:</b> ${E(r.lever_text&&!r.action?r.lever_text:r.action)}</div>`:''}

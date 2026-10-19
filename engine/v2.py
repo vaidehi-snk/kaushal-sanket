@@ -281,8 +281,20 @@ def rnd(o):
     return o
 
 
-def build(seed=11, write=True):
-    df = build_data(seed); coef, idx = learn_index(df); base = base_rows(df, coef); rec = reconcile_called(base); agg = aggregate(base, rec)
+def load_csv(path):
+    """Evaluation ingest. Read a CSV with the same columns build_data() emits
+    (see data/TEMPLATE.csv). This is the hook the hackathon's dummy data plugs into."""
+    df = pd.read_csv(path)
+    df["period"] = pd.to_datetime(df["period"])
+    need = list(build_data(months=1).columns)
+    miss = [c for c in need if c not in df.columns]
+    if miss:
+        raise SystemExit(f"CSV is missing columns: {miss}\nExpected: {need}")
+    return df
+
+
+def build(seed=11, write=True, csv=None):
+    df = load_csv(csv) if csv else build_data(seed); coef, idx = learn_index(df); base = base_rows(df, coef); rec = reconcile_called(base); agg = aggregate(base, rec)
     called = [r for r in base if "f" in r]; mv = rebalance(base); lt = lead_time(df, coef)
     proof = dict(series_total=len(base), called=len(called), abstained=len(base) - len(called),
                  median_mase=float(np.median([r["mase"] for r in called])),
@@ -317,7 +329,16 @@ def build(seed=11, write=True):
 
 
 if __name__ == "__main__":
-    r = build(); rows = r["rows"]
+    import argparse
+    ap = argparse.ArgumentParser(description="Labour-gap engine. --csv runs on real/evaluation data.")
+    ap.add_argument("--csv", help="path to a data file with the TEMPLATE.csv columns; omit to use built-in synthetic data")
+    ap.add_argument("--template", action="store_true", help="write data/TEMPLATE.csv and exit")
+    A = ap.parse_args()
+    if A.template:
+        p = Path(__file__).resolve().parent.parent / "data" / "TEMPLATE.csv"
+        build_data().to_csv(p, index=False); print("wrote", p); raise SystemExit
+    r = build(csv=A.csv); rows = r["rows"]
+    if A.csv: print("ran on", A.csv)
     print(pd.Series([x["status"] for x in rows if x["level"] == "district_trade"]).value_counts().to_dict())
     print("warns:", [(x["district"], x["trade"], x["warn"], x["months_to"]) for x in rows if x.get("warn") and x["level"] == "district_trade"])
     print("moves:", r["moves"][:4], len(r["moves"])); print("weights:", r["index"]["weights"], "r2", r["index"]["r2"])
